@@ -1,0 +1,134 @@
+<script setup>
+import {ref} from 'vue';
+import {useQuasar} from 'quasar';
+import {useRouter} from 'vue-router';
+
+const $q = useQuasar();
+const router = useRouter();
+
+const name = ref(null);
+const userName = ref(null);
+const email = ref(null);
+const password = ref(null);
+const accept = ref(false);
+
+const onSubmit = () => {
+  if (accept.value !== true) {
+    $q.notify({
+      color: 'red-5',
+      textColor: 'white',
+      icon: 'warning',
+      message: 'You need to accept the license and terms first'
+    });
+  } else {
+    $q.notify({
+      color: 'green-4',
+      textColor: 'white',
+      icon: 'cloud_done',
+      message: 'Account created',
+    });
+    router.push({name: 'login'});
+  }
+};
+</script>
+
+<template>
+  <q-layout view="lHh Lpr lFf">
+    <q-page-container>
+      <q-page class="flex flex-center blue-gradient">
+        <q-card class="q-pa-md shadow-2 my_card" bordered>
+          <q-form @submit="onSubmit" class="q-gutter-md">
+            <q-card-section class="text-center">
+              <div class="text-grey-9 text-h5 text-weight-bold">Sign up</div>
+              <div class="text-grey-8">Sign up below to create your account</div>
+            </q-card-section>
+            <q-card-section>
+              <q-input
+                dense
+                outlined
+                v-model="name"
+                class="q-mt-md"
+                label="Your name"
+                hint="Name and surname"
+                lazy-rules
+                :rules="[val => val && val.length > 0 || 'Name and surname are required']"
+              />
+              <q-input
+                dense
+                outlined
+                v-model="userName"
+                class="q-mt-md"
+                label="Username"
+                hint="Enter your username"
+                lazy-rules
+                :rules="[val => val && val.length > 0 || 'Username is required']"
+              />
+              <q-input
+                dense
+                outlined
+                v-model="email"
+                class="q-mt-md"
+                label="Email Address"
+                hint="Enter a valid email"
+                lazy-rules
+                :rules="[val => val && val.includes('@') && val.includes('.')|| 'Valid email is required']"
+              />
+              <q-input
+                dense
+                outlined
+                v-model="password"
+                type="password"
+                class="q-mt-md"
+                label="Password"
+                hint="At least 8 characters, 1 number, 1 upper & 1 lower case"
+                lazy-rules
+                :rules="[ val => !!val || 'Password is required',
+                 val => val.length >= 8 || 'Password must be at least 8 characters',
+                 val => /[0-9]/.test(val) || 'Password must contain at least one number',
+                 val => /[a-z]/.test(val) || 'Password must contain at least one lower case letter',
+                 val => /[A-Z]/.test(val) || 'Password must contain at least one upper case letter']"/>
+            </q-card-section>
+            <q-card-section>
+              <q-toggle v-model="accept" label="I accept the license and terms"/>
+              <div>
+                <q-btn style="border-radius: 8px;" color="dark" rounded size="md" label="Sign up" type="submit" no-caps
+                       class="full-width"></q-btn>
+              </div>
+            </q-card-section>
+            <q-card-section class="text-center q-pt-none">
+              <div class="text-grey-8">
+                Already have an account?
+                <router-link to="/login" class="text-dark text-weight-bold" style="text-decoration: none">Sign in.
+                </router-link>
+              </div>
+            </q-card-section>
+          </q-form>
+        </q-card>
+      </q-page>
+    </q-page-container>
+  </q-layout>
+</template>
+
+<style scoped lang="scss">
+.blue-gradient {
+  background: #4b6cb7;
+  background: $gradient-primary; /* Ensure $gradient-primary is defined in your SCSS */
+}
+
+.blue-custom {
+  background: #4b6cb7;
+  background: $gradient-sec; /* Ensure $gradient-sec is defined in your SCSS */
+}
+
+.my_card {
+  width: 25rem;
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+@media (max-width: 600px) {
+  .my_card {
+    width: 20rem;
+  }
+}
+</style>
