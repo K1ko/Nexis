@@ -7,23 +7,12 @@
 
           <q-item active clickable v-ripple class="text-white">
             <q-btn round
-                   icon="home"
+                   icon="tag"
                    @click="onMenuClick('home')"
-                   @mouseover="iconName = 'home'"
+                   @mouseover="iconName = 'Channels'"
                    @mouseleave="iconName = ''"
             >
-              <q-tooltip v-if="iconName === 'home'">{{ iconName }}</q-tooltip>
-            </q-btn>
-          </q-item>
-
-          <q-item clickable v-ripple class="text-white">
-            <q-btn round
-                   icon="forum"
-                   @click="onMenuClick('dms')"
-                   @mouseover="iconName = 'DMs'"
-                   @mouseleave="iconName = ''"
-            >
-              <q-tooltip v-if="iconName === 'DMs'">{{ iconName }}</q-tooltip>
+              <q-tooltip v-if="iconName === 'Channels'">{{ iconName }}</q-tooltip>
             </q-btn>
           </q-item>
 
@@ -34,12 +23,14 @@
                      @click="onMenuClick('activity')"
                      @mouseover="iconName = 'Activity'"
                      @mouseleave="iconName = ''"
+
               >
+                <q-badge floating color="red" rounded />
                 <q-tooltip v-if="iconName === 'Activity'">{{ iconName }}</q-tooltip>
               </q-btn>
             </q-item-section>
           </q-item>
-
+          <q-toolbar-title></q-toolbar-title>
           <q-item clickable v-ripple class="text-white">
             <q-item-section avatar>
               <q-btn round
@@ -47,68 +38,105 @@
                      @mouseover="iconName = 'Profile'"
                      @mouseleave="iconName = ''"
               >
-                <q-avatar size="42px">
+                <q-avatar size="42px" class="shadow-4">
                   <img src="https://cdn.quasar.dev/img/avatar.png" alt="User Avatar"/>
+                  <q-badge floating color="green" rounded position="bottom-right"/>
                 </q-avatar>
                 <q-tooltip v-if="iconName === 'Profile'">{{ iconName }}</q-tooltip>
               </q-btn>
             </q-item-section>
           </q-item>
 
-          <q-item clickable v-ripple class="text-white">
-            <q-item-section avatar size="42px">
-              <q-btn round
-                     @click="onMenuClick('add')"
-                     @mouseover="iconName = 'Add'"
-                     @mouseleave="iconName = ''"
-              >
-                <q-icon name="add"></q-icon>
-                <q-tooltip v-if="iconName === 'Add'">{{ iconName }}</q-tooltip>
-              </q-btn>
-            </q-item-section>
-          </q-item>
         </q-toolbar>
       </q-header>
 
-      <q-drawer v-model="drawer" side="left" bordered>
+      <q-drawer v-model="drawer" side="left" bordered style="background: #a3a4c2">
         <q-list>
           <q-item>
-            <q-btn flat dense round icon="close" @click="drawer = false" />
+            <q-btn flat dense round icon="arrow_left" @click="drawer = false"/>
           </q-item>
           <template v-if="activeDrawer === 'home'">
-            <q-item>Home Content</q-item>
-          </template>
-          <template v-if="activeDrawer === 'dms'">
-            <q-item>DMs Content</q-item>
+            <q-expansion-item label="Favorites" icon="star">
+              <q-list v-for="n in 5" :key="n">
+                <q-item clickable v-ripple>
+
+                  <q-item-section avatar>
+                    <q-avatar icon="star"></q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    Favorite {{ n }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-expansion-item>
+            <q-expansion-item label="Channels" icon="tag">
+              <q-list v-for="n in 5" :key="n">
+                <q-item clickable v-ripple>
+
+                  <q-item-section avatar>
+                    <q-avatar icon="tag"></q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    Channel {{ n }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-expansion-item>
+            <q-btn rounded label="Create Channel"
+                   style="position: absolute; width:80% ;bottom: 16px; left: 50%; transform: translateX(-50%);"/>
           </template>
           <template v-if="activeDrawer === 'activity'">
-            <q-item>Activity Content</q-item>
+            <q-expansion-item label="Unread" icon="notifications">
+              <q-item clickable v-ripple>
+                <q-item-section>Notification 1</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple>
+                <q-item-section>Notification 2</q-item-section>
+              </q-item>
+            </q-expansion-item>
+            <q-expansion-item label="Mentions" icon="alternate_email">
+              <q-item clickable v-ripple>
+                <q-item-section>Mention 1</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple>
+                <q-item-section>Mention 2</q-item-section>
+              </q-item>
+            </q-expansion-item>
           </template>
           <template v-if="activeDrawer === 'profile'">
-            <q-item>Profile Content</q-item>
-          </template>
-          <template v-if="activeDrawer === 'add'">
-            <q-item>Add Content</q-item>
+            <q-item>
+              <q-avatar size="50px">
+                <img src="https://cdn.quasar.dev/img/avatar.png" alt="User Avatar"/>
+              </q-avatar>
+            </q-item>
+            <q-item>
+              <q-item-section>
+                <q-item-label>User Name</q-item-label>
+                <q-item-label caption>Email@example.com</q-item-label>
+                <q-item-label caption>Status: Online</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-separator/>
+            <q-item clickable v-ripple>
+              <q-item-section>Settings</q-item-section>
+            </q-item>
+            <q-item clickable v-ripple>
+              <q-item-section>Help</q-item-section>
+            </q-item>
+            <q-item clickable v-ripple>
+              <q-item-section>Sign Out</q-item-section>
+            </q-item>
           </template>
         </q-list>
       </q-drawer>
-
       <q-page-container>
-        <q-page padding >
-          <p v-for="n in 15" :key="n">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit nihil praesentium molestias a adipisci,
-            dolore vitae odit, quidem consequatur optio voluptates asperiores pariatur eos numquam rerum delectus
-            commodi perferendis voluptate?
-          </p>
-        </q-page>
+        <ContentPage/>
 
         <q-footer class="flex-footer">
           <div class="fixed-input-container">
             <q-input rounded outlined v-model="text">
               <template v-slot:append>
-                <q-avatar>
-                  <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg">
-                </q-avatar>
+                <q-btn flat dense round icon="send"/>
               </template>
             </q-input>
           </div>
@@ -119,35 +147,35 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import ContentPage from 'components/ContentPage.vue';
 
 export default {
-  setup() {
-    const drawer = ref(false);
-    const text = ref('');
-    const iconName = ref('');
-    const activeDrawer = ref('home');  // Reactive property to manage active drawer content
-
-    const onMenuClick = (menuItem) => {
-      activeDrawer.value = menuItem;  // Set active drawer content
-      drawer.value = true; // Open the drawer when any menu item is clicked
-    };
-
-
+  components: {
+    ContentPage
+  },
+  data() {
     return {
-      drawer,
-      text,
-      iconName,
-      activeDrawer,
-      onMenuClick,
+      drawer: false,
+      iconName: '',
+      activeDrawer: ''
     };
+  },
+  methods: {
+    onMenuClick(menuItem) {
+      if (this.activeDrawer === menuItem) {
+        this.drawer = !this.drawer;
+      } else {
+        this.drawer = true;
+        this.activeDrawer = menuItem;
+      }
+    }
   }
 }
 </script>
 
 <style lang="scss">
 .blue-gradient {
-  background: #4b6cb7;
+  background: #2980B9;
   background: $gradient-primary;
 }
 
