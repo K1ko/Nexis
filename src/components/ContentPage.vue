@@ -24,7 +24,7 @@
             :text="[message.content]"
             :stamp="message.date"
             :sent="message.userId === '1'"
-
+            :bg-color="message.userId === '1' ? 'info' : 'primary'"
           ></q-chat-message>
         </div>
       </div>

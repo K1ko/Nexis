@@ -50,7 +50,7 @@
         </q-toolbar>
       </q-header>
 
-      <q-drawer v-model="drawer" side="left" bordered style="background: #a3a4c2">
+      <q-drawer v-model="drawer" side="left" bordered style="background: #F2E8E4">
         <q-list>
           <q-item>
             <q-btn flat dense round icon="arrow_left" @click="drawer = false"/>
@@ -82,7 +82,7 @@
                 </q-item>
               </q-list>
             </q-expansion-item>
-            <q-btn rounded label="Create Channel"
+            <q-btn class="half-opacity" rounded color="accent" label="Create Channel"
                    style="position: absolute; width:80% ;bottom: 16px; left: 50%; transform: translateX(-50%);"/>
           </template>
           <template v-if="activeDrawer === 'activity'">
@@ -215,5 +215,8 @@ export default {
 .fixed-input-container {
   flex: 1;
   max-width: 100%;
+}
+.half-opacity {
+  opacity: 0.7;
 }
 </style>
