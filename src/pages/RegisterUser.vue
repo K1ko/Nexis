@@ -110,16 +110,6 @@ const onSubmit = () => {
 </template>
 
 <style scoped lang="scss">
-.blue-gradient {
-  background: #4b6cb7;
-  background: $gradient-primary; /* Ensure $gradient-primary is defined in your SCSS */
-}
-
-.blue-custom {
-  background: #4b6cb7;
-  background: $gradient-sec; /* Ensure $gradient-sec is defined in your SCSS */
-}
-
 .my_card {
   width: 25rem;
   border-radius: 8px;

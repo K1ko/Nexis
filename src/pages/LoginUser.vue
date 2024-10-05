@@ -25,7 +25,8 @@ const onSubmit = () => {
       icon: 'cloud_done',
       message: 'Logged in',
     });
-    router.push({name: 'home'});}
+    router.push({name: 'home'});
+  }
 }
 
 </script>
@@ -34,41 +35,45 @@ const onSubmit = () => {
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
       <q-page class="flex flex-center blue-gradient">
-        <q-card class="q-pa-md shadow-2 my_card" bordered>
+        <q-card class="my_card">
           <q-form @submit="onSubmit" class="q-gutter-md">
             <q-card-section class="text-center">
-              <div class="text-grey-9 text-h5 text-weight-bold">Sign in</div>
-              <div class="text-grey-8">Sign in below to access your account</div>
+              <div class="text-accent  text-h6">Sign In</div>
             </q-card-section>
-            <q-card-section>
+            <q-card-section class="q-pb-none q-pt-none">
               <q-input
                 dense
                 outlined
-                class="q-mt-md"
                 v-model="email"
-                label="Email Address"
+                class="q-mt-md"
+                label="Email"
+                hint="Your email"
                 lazy-rules
-                :rules="[val => !!val || 'Email is required']"
+                :rules="[val => val && val.length > 0 || 'Email is required']"
               />
               <q-input
                 dense
                 outlined
-                class="q-mt-md"
                 v-model="password"
-                type="password"
+                class="q-mt-md"
                 label="Password"
+                hint="Your password"
                 lazy-rules
-                :rules="[val => !!val || 'Password is required']"/>
+                :rules="[val => val && val.length > 0 || 'Password is required']"
+              />
             </q-card-section>
-            <q-card-section>
-              <q-btn style="border-radius: 8px;" color="dark" rounded size="md" label="Sign in" no-caps
-                     class="full-width" type="submit"></q-btn>
+            <q-card-section class="q-pt-none">
+              <q-btn
+                type="submit"
+                class="full-width q-mt-md"
+                color="accent"
+                label="Sign In"
+              />
             </q-card-section>
             <q-card-section class="text-center q-pt-none">
-              <div class="text-grey-8">
-                Don't have an account yet?
-                <router-link to="/register" class="text-dark text-weight-bold" style="text-decoration: none">Sign
-                  up.</router-link>
+              <div class="text-grey-8">Don't have an account?
+                <router-link to="/register" class="text-dark text-weight-bold" style="text-decoration:none">Sign up
+                </router-link>
               </div>
             </q-card-section>
           </q-form>
@@ -79,20 +84,13 @@ const onSubmit = () => {
 </template>
 
 <style scoped lang="scss">
-.blue-gradient {
-  background: #4b6cb7;;
-  background: $gradient-primary;
-}
 
-.blue-custom {
-  background: #4b6cb7;;
-  background: $gradient-sec;
-}
 .my_card {
   width: 25rem;
   border-radius: 8px;
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
+
 @media (max-width: 600px) {
   .my_card {
     width: 20rem;
