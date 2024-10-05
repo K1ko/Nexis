@@ -68,6 +68,7 @@ const onSubmit = () => {
                 class="full-width q-mt-md"
                 color="accent"
                 label="Sign In"
+                style="border-radius: 10px;"
               />
             </q-card-section>
             <q-card-section class="text-center q-pt-none">
@@ -88,7 +89,7 @@ const onSubmit = () => {
 .my_card {
   width: 25rem;
   border-radius: 8px;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.7);
 }
 
 @media (max-width: 600px) {
