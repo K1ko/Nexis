@@ -25,7 +25,7 @@
                      @mouseleave="iconName = ''"
 
               >
-                <q-badge floating color="red" rounded />
+                <q-badge floating color="red" rounded/>
                 <q-tooltip v-if="iconName === 'Activity'">{{ iconName }}</q-tooltip>
               </q-btn>
             </q-item-section>
@@ -133,13 +133,7 @@
         <ContentPage/>
 
         <q-footer class="flex-footer">
-          <div class="fixed-input-container">
-            <q-input rounded outlined v-model="text">
-              <template v-slot:append>
-                <q-btn flat dense round icon="send"/>
-              </template>
-            </q-input>
-          </div>
+          <PromptComponent v-model="editor"/>
         </q-footer>
       </q-page-container>
     </q-layout>
@@ -147,11 +141,17 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import ContentPage from 'components/ContentPage.vue';
+import PromptComponent from 'components/PromptComponent.vue';
 
 export default {
-  components: {
-    ContentPage
+  components: {ContentPage, PromptComponent},
+  setup() {
+    const editor = ref('');
+    return {
+      editor
+    };
   },
   data() {
     return {
@@ -216,6 +216,7 @@ export default {
   flex: 1;
   max-width: 100%;
 }
+
 .half-opacity {
   opacity: 0.7;
 }

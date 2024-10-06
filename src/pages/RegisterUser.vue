@@ -42,7 +42,7 @@ const onSubmit = () => {
               <div class="text-grey-9 text-h5 text-weight-bold">Sign up</div>
               <div class="text-grey-8">Sign up below to create your account</div>
             </q-card-section>
-            <q-card-section>
+            <q-card-section class="q-pb-none q-pt-none">
               <q-input
                 dense
                 outlined
@@ -88,11 +88,17 @@ const onSubmit = () => {
                  val => /[a-z]/.test(val) || 'Password must contain at least one lower case letter',
                  val => /[A-Z]/.test(val) || 'Password must contain at least one upper case letter']"/>
             </q-card-section>
-            <q-card-section>
+            <q-card-section class="q-pt-none q-pb-none">
               <q-toggle v-model="accept" label="I accept the license and terms"/>
               <div>
-                <q-btn style="border-radius: 8px;" color="dark" rounded size="md" label="Sign up" type="submit" no-caps
-                       class="full-width"></q-btn>
+                <q-btn
+                  color="accent"
+                  rounded size="md"
+                  label="Sign up" type="submit"
+                  no-caps
+                  class="full-width"
+                  style="border-radius: 10px;"
+                ></q-btn>
               </div>
             </q-card-section>
             <q-card-section class="text-center q-pt-none">
@@ -113,7 +119,7 @@ const onSubmit = () => {
 .my_card {
   width: 25rem;
   border-radius: 8px;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.7);
 
 }
 
