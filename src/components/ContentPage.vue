@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import {defineComponent, reactive} from 'vue';
 
 interface Message {
   id: number;
@@ -43,6 +43,7 @@ interface Message {
   date: string;
   avatar: string;
 }
+
 /*
 * TODO: ADD CODE EXPLANATION
 *  - reactive
