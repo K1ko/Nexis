@@ -30,7 +30,11 @@
               </q-btn>
             </q-item-section>
           </q-item>
-          <q-toolbar-title></q-toolbar-title>
+
+
+          <q-toolbar-title class="text-center glow">Nexis</q-toolbar-title>
+
+
           <q-item clickable v-ripple class="text-white">
             <q-item-section avatar>
               <q-btn round
@@ -40,7 +44,12 @@
               >
                 <q-avatar size="42px" class="shadow-4">
                   <img src="https://cdn.quasar.dev/img/avatar.png" alt="User Avatar"/>
-                  <q-badge floating color="green" rounded position="bottom-right"/>
+                  <q-badge color="white" class="absolute-bottom-right" style="display: flex; justify-content: center; align-items: center;">
+                    <q-badge class="absolute-center" style="border-radius: 7px; width: 14px; height: 14px">
+                      <q-icon :name="userStatusIcon" :color="userStatusColor" size="xs" style="right: 7px" />
+                    </q-badge>
+                  </q-badge>
+
                 </q-avatar>
                 <q-tooltip v-if="iconName === 'Profile'">{{ iconName }}</q-tooltip>
               </q-btn>
@@ -50,7 +59,7 @@
         </q-toolbar>
       </q-header>
 
-      <q-drawer v-model="drawer" side="left" bordered style="background: #F2E8E4">
+      <q-drawer v-model="drawer" side="left" bordered style="background: linear-gradient(to bottom, rgba(52, 148, 230, 0.9), rgba(236, 110, 173, 0.5))">
         <q-list>
           <q-item>
             <q-btn flat dense round icon="arrow_left" @click="drawer = false"/>
@@ -111,9 +120,12 @@
             </q-item>
             <q-item>
               <q-item-section>
-                <q-item-label>User Name</q-item-label>
-                <q-item-label caption>Email@example.com</q-item-label>
-                <q-item-label caption>Status: Online</q-item-label>
+                <q-item-label>{{user.name}}</q-item-label>
+                <q-item-label caption>{{user.email}}</q-item-label>
+                <q-item-label caption>Status: {{user.status}}
+                  <q-icon :name="userStatusIcon" :color="userStatusColor" size="xs" class="q-ml-xs" />
+                </q-item-label>
+
               </q-item-section>
             </q-item>
             <q-separator/>
@@ -132,8 +144,9 @@
       <q-page-container>
         <ContentPage/>
 
+        <!-- Input container -->
         <q-footer class="flex-footer">
-          <PromptComponent v-model="editor"/>
+          <PromptComponent v-model="text"/>
         </q-footer>
       </q-page-container>
     </q-layout>
@@ -141,24 +154,55 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ContentPage from 'components/ContentPage.vue';
 import PromptComponent from 'components/PromptComponent.vue';
 
 export default {
   components: {ContentPage, PromptComponent},
   setup() {
-    const editor = ref('');
+    const text = ref('');
     return {
-      editor
+      text
     };
   },
   data() {
     return {
       drawer: false,
       iconName: '',
-      activeDrawer: ''
+      activeDrawer: '',
+      user: {
+        name: 'John Doe',
+        email: 'Email@example.com',
+        status: 'Online'
+      }
     };
+  },
+  computed: {
+    userStatusColor() {
+      switch (this.user.status) {
+        case 'Online':
+          return 'green';
+        case 'Offline':
+          return 'red';
+        case 'Busy':
+          return 'orange';
+        default:
+          return 'gray';
+      }
+    },
+    userStatusIcon() {
+      switch (this.user.status) {
+        case 'Online':
+          return 'check_circle';
+        case 'Offline':
+          return 'cancel';
+        case 'Busy':
+          return 'error';
+        default:
+          return 'help_outline';
+      }
+    }
   },
   methods: {
     onMenuClick(menuItem) {
@@ -212,12 +256,37 @@ export default {
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.fixed-input-container {
-  flex: 1;
-  max-width: 100%;
-}
 
 .half-opacity {
   opacity: 0.7;
+}
+
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+
+.glow {
+  font-family: Consolas, monaco, monospace;
+  color: #FDD835; /* Sand yellow color */
+  font-size: 40px;
+  text-align: center;
+  -webkit-animation: glow 1s ease-in-out infinite alternate;
+  -moz-animation: glow 1s ease-in-out infinite alternate;
+  animation: glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px #FFFFE0, 0 0 20px #FFFFE0, 0 0 30px #FDD835, 0 0 40px #FDD835, 0 0 50px #FDD835, 0 0 60px #FDD835, 0 0 70px #FDD835;
+  }
+  to {
+    text-shadow: 0 0 20px #FFFFE0, 0 0 30px #FFFFE0, 0 0 40px #FFEB3B, 0 0 50px #FFEB3B, 0 0 60px #FFEB3B, 0 0 70px #FFEB3B, 0 0 80px #FFEB3B;
+  }
 }
 </style>
