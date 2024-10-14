@@ -1,10 +1,9 @@
 <template>
   <div class="q-pa-md">
-    <q-layout view="hHh Lpr lFf" class="flex-layout">
+    <q-layout view="hHh LpR lFr" class="flex-layout">
       <q-header class="blue-custom no-shadow">
         <q-toolbar class="blue-gradient">
-          <q-btn flat @click="drawer = !drawer" round dense icon="menu" v-show="$q.screen.lt.sm"/>
-
+          <q-btn flat @click="leftDrawer = !leftDrawer" round dense icon="menu" v-show="$q.screen.lt.sm"/>
           <q-item active clickable v-ripple class="text-white">
             <q-btn round
                    icon="tag"
@@ -44,9 +43,11 @@
               >
                 <q-avatar size="42px" class="shadow-4">
                   <img src="https://cdn.quasar.dev/img/avatar.png" alt="User Avatar"/>
-                  <q-badge color="white" class="absolute-bottom-right" style="display: flex; justify-content: center; align-items: center;">
-                    <q-badge class="absolute-center" style="border-radius: 7px; width: 14px; height: 14px">
-                      <q-icon :name="userStatusIcon" :color="userStatusColor" size="xs" style="right: 7px" />
+                  <q-badge color="white" class="absolute-bottom-right"
+                           style="display: flex; justify-content: center; align-items: center;">
+                    <q-badge class="absolute-center" :color="userStatusColor"
+                             style="border-radius: 7px; width: 14px; height: 14px">
+
                     </q-badge>
                   </q-badge>
 
@@ -55,38 +56,27 @@
               </q-btn>
             </q-item-section>
           </q-item>
-
+          <q-btn dense flat round icon="menu" @click="rightDrawer = !rightDrawer"/>
         </q-toolbar>
       </q-header>
 
-      <q-drawer v-model="drawer" side="left" bordered style="background: linear-gradient(to bottom, rgba(52, 148, 230, 0.9), rgba(236, 110, 173, 0.5))">
+      <q-drawer v-model="leftDrawer" side="left" bordered
+                style="background: linear-gradient(to bottom, rgba(52, 148, 230, 0.9), rgba(236, 110, 173, 0.5))">
         <q-list>
           <q-item>
-            <q-btn flat dense round icon="arrow_left" @click="drawer = false"/>
+            <q-btn flat dense round icon="arrow_left" @click="leftDrawer = false"/>
           </q-item>
           <template v-if="activeDrawer === 'home'">
-            <q-expansion-item label="Favorites" icon="star">
-              <q-list v-for="n in 5" :key="n">
-                <q-item clickable v-ripple>
 
-                  <q-item-section avatar>
-                    <q-avatar icon="star"></q-avatar>
-                  </q-item-section>
-                  <q-item-section>
-                    Favorite {{ n }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-expansion-item>
             <q-expansion-item label="Channels" icon="tag">
-              <q-list v-for="n in 5" :key="n">
-                <q-item clickable v-ripple>
-
+              <q-list>
+                <q-item v-for="channel in channels" :key="channel.id" clickable v-ripple
+                        @click="selectChannel(channel.id)">
                   <q-item-section avatar>
                     <q-avatar icon="tag"></q-avatar>
                   </q-item-section>
                   <q-item-section>
-                    Channel {{ n }}
+                    {{ channel.name }}
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -116,16 +106,21 @@
             <q-item>
               <q-avatar size="50px">
                 <img src="https://cdn.quasar.dev/img/avatar.png" alt="User Avatar"/>
+                <q-badge color="white" class="absolute-bottom-right"
+                         style="display: flex; justify-content: center; align-items: center;">
+                  <q-badge class="absolute-center" :color="userStatusColor"
+                           style="border-radius: 7px; width: 14px; height: 14px">
+                  </q-badge>
+                </q-badge>
               </q-avatar>
             </q-item>
-            <q-item>
+            <q-item v-if="currentUser">
               <q-item-section>
-                <q-item-label>{{user.name}}</q-item-label>
-                <q-item-label caption>{{user.email}}</q-item-label>
-                <q-item-label caption>Status: {{user.status}}
-                  <q-icon :name="userStatusIcon" :color="userStatusColor" size="xs" class="q-ml-xs" />
+                <q-item-label>{{ currentUser.name }}</q-item-label>
+                <q-item-label caption>{{ currentUser.email }}</q-item-label>
+                <q-item-label caption>
+                  Status: {{ currentUser.status }}
                 </q-item-label>
-
               </q-item-section>
             </q-item>
             <q-separator/>
@@ -141,80 +136,156 @@
           </template>
         </q-list>
       </q-drawer>
+      <q-drawer v-model="rightDrawer" side="right" bordered show-if-above>
+        <q-item v-if="activeChannel">
+          <q-item-section>Active Channel:</q-item-section>
+          <q-item-section>{{ activeChannelReturn["activeChannelName"] }}</q-item-section>
+        </q-item>
+        <q-item v-else>
+          <q-item-section>No active channel</q-item-section>
+        </q-item>
+        <q-separator/>
+        <q-item>
+          <q-item-section>Users in channel:</q-item-section>
+        </q-item>
+        <q-item v-for="user in activeChannelReturn['activeChannelUsers']" :key="user" clickable v-ripple>
+          <q-item-section>
+            <q-avatar color="secondary">
+              {{users.find(u => u.id === parseInt(user))?.name.charAt(0)}}
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            {{ users.find(u => u.id === parseInt(user))?.name || 'Unknown User' }}
+            <q-item-label caption>
+              {{ users.find(u => u.id === parseInt(user))?.status || 'Unknown Status' }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator/>
+        <q-item clickable v-ripple>
+          <q-item-section>Settings</q-item-section>
+        </q-item>
+        <q-separator/>
+
+
+      </q-drawer>
       <q-page-container>
         <ContentPage/>
-
-        <!-- Input container -->
-        <q-footer class="flex-footer">
-          <PromptComponent v-model="text"/>
-        </q-footer>
       </q-page-container>
     </q-layout>
   </div>
 </template>
 
 <script>
-import {ref} from 'vue';
 import ContentPage from 'components/ContentPage.vue';
-import PromptComponent from 'components/PromptComponent.vue';
 
 export default {
-  components: {ContentPage, PromptComponent},
+  components: {ContentPage},
   setup() {
-    const text = ref('');
-    return {
-      text
-    };
   },
   data() {
     return {
-      drawer: false,
+      leftDrawer: false,
+      rightDrawer: false,
       iconName: '',
       activeDrawer: '',
-      user: {
+      currentUserId: 4,
+      users: [{
+        id: 1,
         name: 'John Doe',
         email: 'Email@example.com',
         status: 'Online'
-      }
+      },
+        {
+          id: 2,
+          name: 'Peter Cmorik',
+          email: 'peto.cmorik@gmail.com',
+          status: 'Online'
+        },
+        {
+          id: 3,
+          name: 'Vašo',
+          email: 'patejdlvaso@yahoo.com',
+          status: 'Online',
+        },
+        {
+          id: 4,
+          name: 'Separ',
+          email: 'miskokmet@icloud.com',
+          status: 'Offline',
+        }],
+      channels: [{
+        id: 1,
+        name: 'Pirati',
+        users: ['1', '2', '3','4'],
+        owner: '4',
+        type: 'public'
+      },
+        {
+          id: 2,
+          name: 'Kočner',
+          users: ['1', '3', '4'],
+          owner: '4',
+          type: 'private'
+        },
+        {
+          id: 3,
+          name: 'Babiš',
+          users: ['1', '2', '4'],
+          owner: '3',
+          type: 'public'
+        }
+      ],
+      toggleRightDrawer() {
+        rightDrawer.value = !rightDrawer.value
+      },
+      activeChannel:'',
     };
   },
   computed: {
+    currentUser() {
+      return this.users.find(user => user.id === this.currentUserId) || {};
+
+    },
     userStatusColor() {
-      switch (this.user.status) {
+      console.log(this.currentUser.status);
+      if (!this.currentUser.status) return 'red !important';
+      switch (this.currentUser.status) {
         case 'Online':
           return 'green';
-        case 'Offline':
-          return 'red';
         case 'Busy':
-          return 'orange';
+          return 'red !important';
+        case 'Offline':
+          return 'grey';
         default:
-          return 'gray';
+          return '';
       }
     },
-    userStatusIcon() {
-      switch (this.user.status) {
-        case 'Online':
-          return 'check_circle';
-        case 'Offline':
-          return 'cancel';
-        case 'Busy':
-          return 'error';
-        default:
-          return 'help_outline';
-      }
-    }
+    activeChannelReturn() {
+      let activeChannelName = this.channels.find(channel => channel.id === this.activeChannel)?.name || '';
+      let activeChannelUsers = this.channels.find(channel => channel.id === this.activeChannel)?.users || [];
+      console.log(activeChannelUsers);
+
+      return {activeChannelName, activeChannelUsers}
+    },
   },
   methods: {
     onMenuClick(menuItem) {
       if (this.activeDrawer === menuItem) {
-        this.drawer = !this.drawer;
+        this.leftDrawer = !this.leftDrawer;
       } else {
-        this.drawer = true;
+        this.leftDrawer = true;
         this.activeDrawer = menuItem;
       }
+    },
+    selectChannel(channelId) {
+      this.activeChannel= channelId;
+      console.log(this.activeChannel);
     }
-  }
+  },
+
 }
+
 </script>
 
 <style lang="scss">
@@ -261,32 +332,4 @@ export default {
   opacity: 0.7;
 }
 
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-
-.glow {
-  font-family: Consolas, monaco, monospace;
-  color: #FDD835; /* Sand yellow color */
-  font-size: 40px;
-  text-align: center;
-  -webkit-animation: glow 1s ease-in-out infinite alternate;
-  -moz-animation: glow 1s ease-in-out infinite alternate;
-  animation: glow 1s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-  from {
-    text-shadow: 0 0 10px #FFFFE0, 0 0 20px #FFFFE0, 0 0 30px #FDD835, 0 0 40px #FDD835, 0 0 50px #FDD835, 0 0 60px #FDD835, 0 0 70px #FDD835;
-  }
-  to {
-    text-shadow: 0 0 20px #FFFFE0, 0 0 30px #FFFFE0, 0 0 40px #FFEB3B, 0 0 50px #FFEB3B, 0 0 60px #FFEB3B, 0 0 70px #FFEB3B, 0 0 80px #FFEB3B;
-  }
-}
 </style>

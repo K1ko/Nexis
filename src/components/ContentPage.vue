@@ -29,11 +29,16 @@
         </div>
       </div>
     </q-infinite-scroll>
+    <q-footer class="flex-footer">
+      <PromptComponent v-model="text" @send-message="sendMessage"/>
+    </q-footer>
   </q-page>
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive} from 'vue';
+import {defineComponent, ref} from 'vue';
+import PromptComponent from 'components/PromptComponent.vue';
+
 
 interface Message {
   id: number;
@@ -55,9 +60,11 @@ interface Message {
 *
 * */
 export default defineComponent({
+  components: {PromptComponent},
   name: 'ContentPage',
   setup() {
-    const messages = reactive<Message[]>([
+    const text = ref('');
+    const messages = ref<Message[]>([
       {
         id: 1,
         userId: '1',
@@ -80,7 +87,7 @@ export default defineComponent({
       setTimeout(() => {
         const moreMessages = [
           {
-            id: messages.length + 1,
+            id: messages.value.length + 1,
             userId: '1',
             channelId: 1,
             content: 'I am fine, thank you',
@@ -88,7 +95,7 @@ export default defineComponent({
             avatar: 'https://cdn.quasar.dev/img/avatar.png',
           },
           {
-            id: messages.length + 2,
+            id: messages.value.length + 2,
             userId: 'Palo Ščerba',
             channelId: 1,
             content: 'Ďalšia súťaž bude o 2 týždne',
@@ -97,25 +104,43 @@ export default defineComponent({
           },
         ];
         if (moreMessages.length > 0) {
-          messages.unshift(...moreMessages);
+          messages.value.unshift(...moreMessages);
           done(); // continue loading
         } else {
           done(true); // stop loading, no more messages
         }
       }, 2000);
     }
+    function sendMessage(content: string) {
+      messages.value.push({
+        id: messages.value.length + 1,
+        userId: '1', // Assuming user with id '1' is the sender
+        channelId: 1,
+        content: content,
+        date: 'Just now',
+        avatar: 'https://cdn.quasar.dev/img/avatar.png',
+      });
+    }
 
     return {
       messages,
       loadMoreMessages,
+      text,
+      sendMessage
     };
   },
 });
 </script>
 
 <style scoped>
-.q-page {
-  flex: 1;
+
+.flex-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
 
