@@ -19,12 +19,12 @@
           <q-chat-message
             v-for="(message, index) in messages"
             :key="index"
-            :name="message.userId"
+            :name="message.userName"
             :avatar="message.avatar"
-            :text="[message.content]"
-            :stamp="message.date"
-            :sent="message.userId === '1'"
-            :bg-color="message.userId === '1' ? 'info' : 'primary'"
+            :text="[message.text]"
+            :stamp="message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })"
+            :sent="message.userName === '1'"
+            :bg-color="message.userName === '1' ? 'info' : 'primary'"
           ></q-chat-message>
         </div>
       </div>
@@ -42,66 +42,36 @@ import PromptComponent from 'components/PromptComponent.vue';
 
 interface Message {
   id: number;
-  userId: string;
+  userName: string;
   channelId: number;
-  content: string;
-  date: string;
+  text: string;
+  timestamp: Date ;
   avatar: string;
 }
 
-/*
-* TODO: ADD CODE EXPLANATION
-*  - reactive
-* - loadMoreMessages
-* - messages
-* - update viewport
-*
-*
-*
-* */
 export default defineComponent({
   components: {PromptComponent},
   name: 'ContentPage',
   setup() {
     const text = ref('');
     const messages = ref<Message[]>([
-      {
-        id: 1,
-        userId: '1',
-        channelId: 1,
-        content: 'hey, how are you?',
-        date: '7 minutes ago',
-        avatar: 'https://cdn.quasar.dev/img/avatar.png',
-      },
-      {
-        id: 2,
-        userId: 'Palo Ščerba',
-        channelId: 1,
-        content: 'Kedy bude ďalšia súťaž?',
-        date: '7 minutes ago',
-        avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg',
-      },
+      {id: 1, userName: 'GogomanTV', channelId: 1, text: 'Pozor zítra', timestamp: new Date(), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
+      {id: 2, userName: 'Palo Ščerba', channelId: 1, text: 'Kedy bude ďalšia súťaž?', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg'},
+      {id: 3, userName: 'ResttPowered', channelId: 1, text: 'nehehehe', timestamp: new Date(), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
+      {id: 4, userName: '1', channelId: 1, text: 'jakoooo', timestamp: new Date(), avatar: 'https://cdn.quasar.dev/img/avatar.png'},
+      {id: 5, userName: 'Separ', channelId: 1, text: 'Kupil som si nove lambo', timestamp: new Date(), avatar: 'https://cdn.ticketlive.cz/upload/obrazek/nahled/o16tp-separ.jpg'},
+      {id: 6, userName: 'ResttPowered', channelId: 1, text: 'elektrika je lepšia', timestamp: new Date(), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
+      {id: 7, userName: 'GogomanTV', channelId: 1, text: 'Pozor zítra', timestamp: new Date(), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
+      {id: 8, userName: 'Palo Ščerba', channelId: 1, text: 'Kedy bude ďalšia súťaž?', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg'},
+      {id: 9, userName: 'ResttPowered', channelId: 1, text: 'Vy ostatní nezúfajte... o ďalší týždeň je ďalšia súťaž... o ďalší protein', timestamp: new Date(), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
+
     ]);
 
     function loadMoreMessages(index: number, done: (stop?: boolean) => void) {
       setTimeout(() => {
         const moreMessages = [
-          {
-            id: messages.value.length + 1,
-            userId: '1',
-            channelId: 1,
-            content: 'I am fine, thank you',
-            date: 'Just now',
-            avatar: 'https://cdn.quasar.dev/img/avatar.png',
-          },
-          {
-            id: messages.value.length + 2,
-            userId: 'Palo Ščerba',
-            channelId: 1,
-            content: 'Ďalšia súťaž bude o 2 týždne',
-            date: 'Just now',
-            avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg',
-          },
+          {id: messages.value.length + 1, userName: '1', channelId: 1, text: 'I am fine, thank you', timestamp: new Date(), avatar: 'https://cdn.quasar.dev/img/avatar.png',},
+          {id: messages.value.length + 2, userName: 'Palo Ščerba', channelId: 1, text: 'Ďalšia súťaž bude o 2 týždne', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg',},
         ];
         if (moreMessages.length > 0) {
           messages.value.unshift(...moreMessages);
@@ -114,10 +84,10 @@ export default defineComponent({
     function sendMessage(content: string) {
       messages.value.push({
         id: messages.value.length + 1,
-        userId: '1', // Assuming user with id '1' is the sender
+        userName: '1',
         channelId: 1,
-        content: content,
-        date: 'Just now',
+        text: content,
+        timestamp: new Date(),
         avatar: 'https://cdn.quasar.dev/img/avatar.png',
       });
     }
