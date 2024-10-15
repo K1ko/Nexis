@@ -30,8 +30,7 @@
           </q-item>
 
 
-          <q-toolbar-title class="text-center">Nexis</q-toolbar-title>
-
+          <q-toolbar-title class="text-center ">Nexis</q-toolbar-title>
 
           <q-item clickable v-ripple class="text-white">
             <q-item-section avatar>
@@ -81,6 +80,7 @@
               </q-list>
             </q-expansion-item>
             <q-btn class="half-opacity" rounded color="accent" label="Create Channel"
+                   @click="createChannel"
                    style="position: absolute; width:80% ;bottom: 16px; left: 50%; transform: translateX(-50%);"/>
           </template>
           <template v-if="activeDrawer === 'activity'">
@@ -153,11 +153,20 @@
         <!-- Check whether the channel is active, if active display its type       -->
         <q-item v-if="activeChannel">
           <q-item-label>
+            Owner:
+            {{
+              users.find(u => u.id === parseInt(channels.find(channel => channel.id === activeChannel)?.owner))?.name || 'Unknown User'
+            }}
+          </q-item-label>
+        </q-item>
+        <q-item v-if="activeChannel">
+          <q-item-label>
             {{ channels.find(channel => channel.id === activeChannel)?.type }}
             <q-icon v-if="channels.find(channel => channel.id === activeChannel)?.type === 'private'" name="lock"/>
             <q-icon v-else name="lock_open"/>
           </q-item-label>
         </q-item>
+
         <q-separator/>
         <q-item v-if="activeChannel">
           <q-item-section>Users in channel:</q-item-section>
@@ -186,7 +195,7 @@
 
       </q-drawer>
       <q-page-container>
-        <ContentPage/>
+        <ContentPage :activeChannel="activeChannel"/>
       </q-page-container>
     </q-layout>
   </div>
@@ -205,7 +214,7 @@ export default {
       rightDrawer: false,
       iconName: '',
       activeDrawer: '',
-      currentUserId: 4,
+      currentUserId: 1,
       users: [{
         id: 1,
         name: 'John Doe',
@@ -214,13 +223,13 @@ export default {
       },
         {
           id: 2,
-          name: 'Peter Cmorik',
+          name: 'GogomanTV',
           email: 'peto.cmorik@gmail.com',
           status: 'Online'
         },
         {
           id: 3,
-          name: 'Vašo',
+          name: 'ResttPowered',
           email: 'patejdlvaso@yahoo.com',
           status: 'Online',
         },
@@ -229,11 +238,17 @@ export default {
           name: 'Separ',
           email: 'miskokmet@icloud.com',
           status: 'Offline',
+        },
+        {
+          id: 5,
+          name: 'PaloŠčerba',
+          email: 'palijari@gmail.com',
+          status: 'Busy',
         }],
       channels: [{
         id: 1,
         name: 'Pirati',
-        users: ['1', '2', '3', '4'],
+        users: ['1', '2', '3', '4', '5'],
         owner: '4',
         type: 'public'
       },
@@ -247,7 +262,7 @@ export default {
         {
           id: 3,
           name: 'Babiš',
-          users: ['1', '2', '4'],
+          users: ['1', '2', '4', '5'],
           owner: '3',
           type: 'public'
         }
@@ -294,9 +309,14 @@ export default {
     selectChannel(channelId) {
       this.activeChannel = channelId;
       console.log(this.activeChannel);
+    },
+
+    createChannel() {
+      const newChannelId = Date.now(); // Using timestamp as a unique ID
+      const newChannel = {id: newChannelId, name: `New Channel ${newChannelId}`};
+      this.channels.push(newChannel);
     }
   },
-
 }
 
 </script>
@@ -344,5 +364,8 @@ export default {
 .half-opacity {
   opacity: 0.7;
 }
+
+
+
 
 </style>
