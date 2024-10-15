@@ -3,7 +3,6 @@
     <q-layout view="hHh LpR lFr" class="flex-layout">
       <q-header class="blue-custom no-shadow">
         <q-toolbar class="blue-gradient">
-          <q-btn flat @click="leftDrawer = !leftDrawer" round dense icon="menu" v-show="$q.screen.lt.sm"/>
           <q-item active clickable v-ripple class="text-white">
             <q-btn round
                    icon="tag"
@@ -31,7 +30,7 @@
           </q-item>
 
 
-          <q-toolbar-title class="text-center glow">Nexis</q-toolbar-title>
+          <q-toolbar-title class="text-center">Nexis</q-toolbar-title>
 
 
           <q-item clickable v-ripple class="text-white">
@@ -59,7 +58,7 @@
           <q-btn dense flat round icon="menu" @click="rightDrawer = !rightDrawer"/>
         </q-toolbar>
       </q-header>
-
+      <!-- Left drawer      -->
       <q-drawer v-model="leftDrawer" side="left" bordered
                 style="background: linear-gradient(to bottom, rgba(52, 148, 230, 0.9), rgba(236, 110, 173, 0.5))">
         <q-list>
@@ -73,7 +72,7 @@
                 <q-item v-for="channel in channels" :key="channel.id" clickable v-ripple
                         @click="selectChannel(channel.id)">
                   <q-item-section avatar>
-                    <q-avatar icon="tag"></q-avatar>
+                    <q-avatar icon="group"></q-avatar>
                   </q-item-section>
                   <q-item-section>
                     {{ channel.name }}
@@ -125,33 +124,48 @@
             </q-item>
             <q-separator/>
             <q-item clickable v-ripple>
-              <q-item-section>Settings</q-item-section>
+              <q-item-section class="row items-center justify-center">Settings
+                <q-icon name="settings"/>
+              </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
-              <q-item-section>Help</q-item-section>
+              <q-item-section class="row items-center justify-center">Help
+                <q-icon name="help"/>
+              </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
-              <q-item-section>Sign Out</q-item-section>
+              <q-item-section class="row items-center justify-center">Sign Out
+                <q-icon name="logout"/>
+              </q-item-section>
             </q-item>
           </template>
         </q-list>
       </q-drawer>
-      <q-drawer v-model="rightDrawer" side="right" bordered show-if-above>
+      <!-- Right drawer      -->
+      <q-drawer v-model="rightDrawer" side="right" bordered show-if-above
+      >
         <q-item v-if="activeChannel">
-          <q-item-section>Active Channel:</q-item-section>
-          <q-item-section>{{ activeChannelReturn["activeChannelName"] }}</q-item-section>
+          <q-item-section>Active Channel: {{ activeChannelReturn["activeChannelName"] }}</q-item-section>
         </q-item>
         <q-item v-else>
           <q-item-section>No active channel</q-item-section>
         </q-item>
+        <!-- Check whether the channel is active, if active display its type       -->
+        <q-item v-if="activeChannel">
+          <q-item-label>
+            {{ channels.find(channel => channel.id === activeChannel)?.type }}
+            <q-icon v-if="channels.find(channel => channel.id === activeChannel)?.type === 'private'" name="lock"/>
+            <q-icon v-else name="lock_open"/>
+          </q-item-label>
+        </q-item>
         <q-separator/>
-        <q-item>
+        <q-item v-if="activeChannel">
           <q-item-section>Users in channel:</q-item-section>
         </q-item>
         <q-item v-for="user in activeChannelReturn['activeChannelUsers']" :key="user" clickable v-ripple>
           <q-item-section>
             <q-avatar color="secondary">
-              {{users.find(u => u.id === parseInt(user))?.name.charAt(0)}}
+              {{ users.find(u => u.id === parseInt(user))?.name.charAt(0) }}
             </q-avatar>
           </q-item-section>
           <q-item-section>
@@ -163,7 +177,9 @@
         </q-item>
         <q-separator/>
         <q-item clickable v-ripple>
-          <q-item-section>Settings</q-item-section>
+          <q-item-section class="row items-center justify-center">Settings
+            <q-icon name="settings"/>
+          </q-item-section>
         </q-item>
         <q-separator/>
 
@@ -217,7 +233,7 @@ export default {
       channels: [{
         id: 1,
         name: 'Pirati',
-        users: ['1', '2', '3','4'],
+        users: ['1', '2', '3', '4'],
         owner: '4',
         type: 'public'
       },
@@ -236,10 +252,7 @@ export default {
           type: 'public'
         }
       ],
-      toggleRightDrawer() {
-        rightDrawer.value = !rightDrawer.value
-      },
-      activeChannel:'',
+      activeChannel: '',
     };
   },
   computed: {
@@ -279,7 +292,7 @@ export default {
       }
     },
     selectChannel(channelId) {
-      this.activeChannel= channelId;
+      this.activeChannel = channelId;
       console.log(this.activeChannel);
     }
   },
