@@ -157,7 +157,6 @@
             <q-icon v-else name="lock_open"/>
           </q-item-label>
         </q-item>
-
         <q-separator/>
         <q-item v-if="activeChannel">
           <q-item-section>Users in channel:</q-item-section>
@@ -176,14 +175,12 @@
           </q-item-section>
         </q-item>
         <q-separator/>
-        <q-item clickable v-ripple v-if="activeChannel">
+        <q-item clickable v-ripple v-if="activeChannel" @click="leaveChannel">
           <q-item-section class="row items-center justify-center">Leave Channel
             <q-icon name="logout"/>
           </q-item-section>
         </q-item>
         <q-separator/>
-
-
       </q-drawer>
       <q-page-container>
         <ContentPage :activeChannel="activeChannel"/>
@@ -197,21 +194,10 @@
 import { defineComponent, ref, computed} from 'vue';
 import ContentPage from 'components/ContentPage.vue';
 import AccountSettings from 'components/AccountSettings.vue';
+import {Notify} from 'quasar';
+import {Channel,User} from 'components/models';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  status: string;
-}
 
-interface Channel {
-  id: number;
-  name: string;
-  users: string[];
-  owner: string;
-  type: string;
-}
 
 export default defineComponent({
   components: {ContentPage, AccountSettings},
@@ -280,13 +266,25 @@ export default defineComponent({
       activeChannel.value = channelId;
     };
 
+    const leaveChannel = () => {
+      if (activeChannel.value) {
+        Notify.create({
+          color: 'red-5',
+          textColor: 'white',
+          icon: 'warning',
+          message: 'You have left the chat',
+          position: 'top'
+        });
+        activeChannel.value = undefined;
+      }
+    };
     const createChannel = () => {
       const newChannelId = Date.now();
       const newChannel: Channel = {
         id: newChannelId,
         name: `New Channel ${newChannelId}`,
-        users: [],
-        owner: '',
+        users: [currentUserId.value.toString()],
+        owner: currentUserId.value.toString(),
         type: 'public'
       };
       channels.value.push(newChannel);
@@ -315,6 +313,7 @@ export default defineComponent({
       activeChannelReturn,
       onMenuClick,
       selectChannel,
+      leaveChannel,
       createChannel,
       updateUserStatus
     };
