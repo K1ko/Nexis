@@ -58,15 +58,7 @@
 import {defineComponent, watch, ref} from 'vue';
 import PromptComponent from 'components/PromptComponent.vue';
 import { Notify } from 'quasar';
-
-interface Message {
-  id: number;
-  userName: string;
-  channelId: number;
-  text: string;
-  timestamp: Date ;
-  avatar: string;
-}
+import {Message} from 'components/models';
 
 export default defineComponent({
   components: {PromptComponent},
@@ -135,7 +127,8 @@ export default defineComponent({
           color: 'red-5',
           textColor: 'white',
           icon: 'warning',
-          message: 'You have left the chat'
+          message: 'You have left the chat',
+          position: 'top'
         });
       }
       else{
