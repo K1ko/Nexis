@@ -24,9 +24,23 @@
             :avatar="message.avatar"
             :text="[message.text]"
             :stamp="message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })"
-            :sent="message.userName === '1'"
-            :bg-color="message.userName === '1' ? 'info' : 'primary'"
-          ></q-chat-message>
+            :sent="message.userName === 'John Doe'"
+            :bg-color="message.userName === 'John Doe' ? 'info' : 'primary'"
+          >
+          </q-chat-message>
+          <q-chat-message
+            name="Palo Ščerba"
+            avatar="https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg"
+            bg-color="primary"
+            @click="showPlaceholder = !showPlaceholder"
+          >
+            <template v-if="showPlaceholder">
+              <div class="placeholder">Kde mam protein?</div>
+            </template>
+            <template v-else>
+              <q-spinner-dots size="2rem" />
+            </template>
+          </q-chat-message>
         </div>
       </div>
     </q-infinite-scroll>
@@ -66,8 +80,10 @@ export default defineComponent({
   },
   setup(props) {
     const text = ref('');
+    const showPlaceholder = ref(false);
+
     const messages = ref<Message[]>([
-      {id: 1, userName: 'GogomanTV', channelId: 1, text: 'Pozor zítra', timestamp: new Date(), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
+      {id: 1, userName: 'GogomanTV', channelId: 1, text: 'Pozor zítra', timestamp: new Date('2022-07-17T16:00:00'), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
       {id: 2, userName: 'Palo Ščerba', channelId: 1, text: 'Kedy bude ďalšia súťaž?', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg'},
       {id: 3, userName: 'ResttPowered', channelId: 1, text: 'nehehehe', timestamp: new Date(), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
       {id: 4, userName: 'John Doe', channelId: 1, text: 'jakoooo', timestamp: new Date(), avatar: 'https://cdn.quasar.dev/img/avatar.png'},
@@ -83,15 +99,14 @@ export default defineComponent({
       if (newChannel) {
         // Fetch new messages for the new channel
         console.log(`Channel changed to: ${newChannel}`);
-        // Reset or fetch the messages based on the newChannel
-        // messages.value = fetchMessagesForChannel(newChannel); // Example function
       }
     });
+
 
     function loadMoreMessages(index: number, done: (stop?: boolean) => void) {
       setTimeout(() => {
         const moreMessages = [
-          {id: messages.value.length + 1, userName: '1', channelId: 1, text: 'I am fine, thank you', timestamp: new Date(), avatar: 'https://cdn.quasar.dev/img/avatar.png',},
+          {id: messages.value.length + 1, userName: 'John Doe', channelId: 1, text: 'I am fine, thank you', timestamp: new Date(), avatar: 'https://cdn.quasar.dev/img/avatar.png',},
           {id: messages.value.length + 2, userName: 'Palo Ščerba', channelId: 1, text: 'Ďalšia súťaž bude o 2 týždne', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg',},
         ];
         if (moreMessages.length > 0) {
@@ -111,7 +126,8 @@ export default defineComponent({
           channelId: props.activeChannel,
           text: 'List of users: John Doe, Palo Ščerba, ResttPowered, GogomanTV, Separ',
           timestamp: new Date(),
-          avatar: 'src/assets/logo.png',
+          avatar: 'https://static-00.iconduck.com/assets.00/robot-icon-485x512-a3dpk3b2.png',
+
         });
       }
       else if(command==='/quit') {
@@ -129,7 +145,7 @@ export default defineComponent({
           channelId: props.activeChannel,
           text: 'Unknown command',
           timestamp: new Date(),
-          avatar: 'src/assets/logo.png',
+          avatar: 'https://static-00.iconduck.com/assets.00/robot-icon-485x512-a3dpk3b2.png',
         });
       }
     }
@@ -153,7 +169,9 @@ export default defineComponent({
       loadMoreMessages,
       text,
       sendMessage,
-      props
+      props,
+      showPlaceholder,
+
     };
   },
 });
@@ -169,6 +187,4 @@ export default defineComponent({
   background: white;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
-
-
 </style>

@@ -6,7 +6,8 @@ import {useRouter} from 'vue-router';
 const $q = useQuasar();
 const router = useRouter();
 
-const name = ref(null);
+const firstName = ref(null);
+const lastName = ref(null);
 const userName = ref(null);
 const email = ref(null);
 const password = ref(null);
@@ -18,7 +19,8 @@ const onSubmit = () => {
       color: 'red-5',
       textColor: 'white',
       icon: 'warning',
-      message: 'You need to accept the license and terms first'
+      message: 'You need to accept the license and terms first',
+      position: 'top'
     });
   } else {
     $q.notify({
@@ -26,6 +28,7 @@ const onSubmit = () => {
       textColor: 'white',
       icon: 'cloud_done',
       message: 'Account created',
+      position: 'top'
     });
     router.push({name: 'login'});
   }
@@ -46,12 +49,22 @@ const onSubmit = () => {
               <q-input
                 dense
                 outlined
-                v-model="name"
+                v-model="firstName"
                 class="q-mt-md"
                 label="Your name"
-                hint="Name and surname"
+                hint="First name"
                 lazy-rules
-                :rules="[val => val && val.length > 0 || 'Name and surname are required']"
+                :rules="[val => val && val.length > 0 || 'Name required']"
+              />
+              <q-input
+                dense
+                outlined
+                v-model="lastName"
+                class="q-mt-md"
+                label="Your surname"
+                hint="Last Name"
+                lazy-rules
+                :rules="[val => val && val.length > 0 || 'Surname required']"
               />
               <q-input
                 dense
