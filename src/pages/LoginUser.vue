@@ -10,13 +10,13 @@ const email = ref(null);
 const password = ref(null);
 
 const onSubmit = () => {
-  //treba spravit normalne overenie emailu a hesla
   if (email.value === null || password.value === null) {
     $q.notify({
       color: 'red-5',
       textColor: 'white',
       icon: 'warning',
-      message: 'Email and password are required'
+      message: 'Email and password are required',
+      position: 'top'
     });
   } else {
     $q.notify({
@@ -24,6 +24,7 @@ const onSubmit = () => {
       textColor: 'white',
       icon: 'cloud_done',
       message: 'Logged in',
+      position: 'top'
     });
     router.push({name: 'home'});
   }

@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-layout view="hHh LpR lFr" class="flex-layout">
-      <q-header class="blue-custom no-shadow">
+      <q-header class="no-shadow">
         <q-toolbar class="blue-gradient">
           <q-item active clickable v-ripple class="text-white">
             <q-btn round
@@ -13,7 +13,6 @@
               <q-tooltip v-if="iconName === 'Channels'">{{ iconName }}</q-tooltip>
             </q-btn>
           </q-item>
-
           <q-item clickable v-ripple class="text-white">
             <q-item-section avatar>
               <q-btn round
@@ -28,10 +27,7 @@
               </q-btn>
             </q-item-section>
           </q-item>
-
-
-          <q-toolbar-title class="text-center ">Nexis</q-toolbar-title>
-
+          <q-toolbar-title :class="{ ' invisible': $q.screen.lt.sm}" class="text-center">Nexis</q-toolbar-title>
           <q-item clickable v-ripple class="text-white">
             <q-item-section avatar>
               <q-btn round
@@ -43,9 +39,7 @@
                   <img src="https://cdn.quasar.dev/img/avatar.png" alt="User Avatar"/>
                   <q-badge color="white" class="absolute-bottom-right"
                            style="display: flex; justify-content: center; align-items: center;">
-                    <q-badge class="absolute-center" :color="userStatusColor"
-                             style="border-radius: 7px; width: 14px; height: 14px">
-
+                    <q-badge class="absolute-center user-status" :color="userStatusColor">
                     </q-badge>
                   </q-badge>
 
@@ -59,7 +53,7 @@
       </q-header>
       <!-- Left drawer      -->
       <q-drawer v-model="leftDrawer" side="left" bordered
-                style="background: linear-gradient(to bottom, rgba(52, 148, 230, 0.9), rgba(236, 110, 173, 0.5))">
+                class="drawer-gradient">
         <q-list>
           <q-item>
             <q-btn flat dense round icon="arrow_left" @click="leftDrawer = false"/>
@@ -79,9 +73,8 @@
                 </q-item>
               </q-list>
             </q-expansion-item>
-            <q-btn class="half-opacity" rounded color="accent" label="Create Channel"
-                   @click="createChannel"
-                   style="position: absolute; width:80% ;bottom: 16px; left: 50%; transform: translateX(-50%);"/>
+            <q-btn class="create-channel-btn" rounded color="accent" label="Create Channel"
+                   @click="createChannel"/>
           </template>
           <template v-if="activeDrawer === 'activity'">
             <q-expansion-item label="Unread" icon="notifications">
@@ -107,8 +100,7 @@
                 <img src="https://cdn.quasar.dev/img/avatar.png" alt="User Avatar"/>
                 <q-badge color="white" class="absolute-bottom-right"
                          style="display: flex; justify-content: center; align-items: center;">
-                  <q-badge class="absolute-center" :color="userStatusColor"
-                           style="border-radius: 7px; width: 14px; height: 14px">
+                  <q-badge class="absolute-center user-status" :color="userStatusColor">
                   </q-badge>
                 </q-badge>
               </q-avatar>
@@ -118,19 +110,17 @@
                 <q-item-label>{{ currentUser.name }}</q-item-label>
                 <q-item-label caption>{{ currentUser.email }}</q-item-label>
                 <q-item-label caption>
-                  Status: {{ currentUser.status }}
+                  Status:
+                  <q-select v-model="currentUser.status" :options="['Online', 'Busy', 'Offline']"
+                            @input="updateUserStatus"/>
                 </q-item-label>
               </q-item-section>
             </q-item>
             <q-separator/>
-            <q-item clickable v-ripple>
-              <q-item-section class="row items-center justify-center">Settings
+            <q-item clickable v-ripple @click="showSettings = !showSettings">
+              <q-item-section class="row items-center justify-center">
+                Settings
                 <q-icon name="settings"/>
-              </q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section class="row items-center justify-center">Help
-                <q-icon name="help"/>
               </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
@@ -155,14 +145,15 @@
           <q-item-label>
             Owner:
             {{
-              users.find(u => u.id === parseInt(channels.find(channel => channel.id === activeChannel)?.owner))?.name || 'Unknown User'
+              users.find((u: User) => u.id === parseInt(channels.find((channel: Channel) => channel.id === activeChannel)?.owner || '0'))?.name || 'Unknown User'
             }}
           </q-item-label>
         </q-item>
         <q-item v-if="activeChannel">
           <q-item-label>
-            {{ channels.find(channel => channel.id === activeChannel)?.type }}
-            <q-icon v-if="channels.find(channel => channel.id === activeChannel)?.type === 'private'" name="lock"/>
+            {{ channels.find((channel: Channel) => channel.id === activeChannel)?.type }}
+            <q-icon v-if="channels.find((channel: Channel) => channel.id === activeChannel)?.type === 'private'"
+                    name="lock"/>
             <q-icon v-else name="lock_open"/>
           </q-item-label>
         </q-item>
@@ -171,23 +162,23 @@
         <q-item v-if="activeChannel">
           <q-item-section>Users in channel:</q-item-section>
         </q-item>
-        <q-item v-for="user in activeChannelReturn['activeChannelUsers']" :key="user" clickable v-ripple>
+        <q-item v-for="user in activeChannelReturn.activeChannelUsers" :key="user" clickable v-ripple>
           <q-item-section>
             <q-avatar color="secondary">
-              {{ users.find(u => u.id === parseInt(user))?.name.charAt(0) }}
+              {{ users.find((u: User) => u.id === parseInt(user))?.name.charAt(0) }}
             </q-avatar>
           </q-item-section>
           <q-item-section>
-            {{ users.find(u => u.id === parseInt(user))?.name || 'Unknown User' }}
+            {{ users.find((u: User) => u.id === parseInt(user))?.name || 'Unknown User' }}
             <q-item-label caption>
-              {{ users.find(u => u.id === parseInt(user))?.status || 'Unknown Status' }}
+              {{ users.find((u: User) => u.id === parseInt(user))?.status || 'Unknown Status' }}
             </q-item-label>
           </q-item-section>
         </q-item>
         <q-separator/>
-        <q-item clickable v-ripple>
-          <q-item-section class="row items-center justify-center">Settings
-            <q-icon name="settings"/>
+        <q-item clickable v-ripple v-if="activeChannel">
+          <q-item-section class="row items-center justify-center">Leave Channel
+            <q-icon name="logout"/>
           </q-item-section>
         </q-item>
         <q-separator/>
@@ -196,89 +187,67 @@
       </q-drawer>
       <q-page-container>
         <ContentPage :activeChannel="activeChannel"/>
+        <AccountSettings :layout="showSettings"/>
       </q-page-container>
     </q-layout>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref, computed} from 'vue';
 import ContentPage from 'components/ContentPage.vue';
+import AccountSettings from 'components/AccountSettings.vue';
 
-export default {
-  components: {ContentPage},
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  status: string;
+}
+
+interface Channel {
+  id: number;
+  name: string;
+  users: string[];
+  owner: string;
+  type: string;
+}
+
+export default defineComponent({
+  components: {ContentPage, AccountSettings},
   setup() {
-  },
-  data() {
-    return {
-      leftDrawer: false,
-      rightDrawer: false,
-      iconName: '',
-      activeDrawer: '',
-      currentUserId: 1,
-      users: [{
-        id: 1,
-        name: 'John Doe',
-        email: 'Email@example.com',
-        status: 'Online'
-      },
-        {
-          id: 2,
-          name: 'GogomanTV',
-          email: 'peto.cmorik@gmail.com',
-          status: 'Online'
-        },
-        {
-          id: 3,
-          name: 'ResttPowered',
-          email: 'patejdlvaso@yahoo.com',
-          status: 'Online',
-        },
-        {
-          id: 4,
-          name: 'Separ',
-          email: 'miskokmet@icloud.com',
-          status: 'Offline',
-        },
-        {
-          id: 5,
-          name: 'PaloŠčerba',
-          email: 'palijari@gmail.com',
-          status: 'Busy',
-        }],
-      channels: [{
-        id: 1,
-        name: 'Pirati',
-        users: ['1', '2', '3', '4', '5'],
-        owner: '4',
-        type: 'public'
-      },
-        {
-          id: 2,
-          name: 'Kočner',
-          users: ['1', '3', '4'],
-          owner: '4',
-          type: 'private'
-        },
-        {
-          id: 3,
-          name: 'Babiš',
-          users: ['1', '2', '4', '5'],
-          owner: '3',
-          type: 'public'
-        }
-      ],
-      activeChannel: '',
-    };
-  },
-  computed: {
-    currentUser() {
-      return this.users.find(user => user.id === this.currentUserId) || {};
+    const leftDrawer = ref(false);
+    const rightDrawer = ref(false);
+    const iconName = ref('');
+    const showSettings = ref(false);
+    const activeDrawer = ref('');
+    const currentUserId = ref(1);
+    const activeChannel = ref<number | undefined>(undefined);
 
-    },
-    userStatusColor() {
-      console.log(this.currentUser.status);
-      if (!this.currentUser.status) return 'red !important';
-      switch (this.currentUser.status) {
+    const users = ref<User[]>([
+      {id: 1, name: 'John Doe', email: 'Email@example.com', status: 'Online'},
+      {id: 2, name: 'GogomanTV', email: 'peto.cmorik@gmail.com', status: 'Online'},
+      {id: 3, name: 'ResttPowered', email: 'patejdlvaso@yahoo.com', status: 'Online'},
+      {id: 4, name: 'Separ', email: 'miskokmet@icloud.com', status: 'Offline'},
+      {id: 5, name: 'PaloŠčerba', email: 'palijari@gmail.com', status: 'Busy'},
+    ]);
+
+    const channels = ref<Channel[]>([
+      {id: 1, name: 'Pirati', users: ['1', '2', '3', '4', '5'], owner: '4', type: 'public'},
+      {id: 2, name: 'FIIT', users: ['1', '3', '4'], owner: '4', type: 'private'},
+      {id: 3, name: 'VPWA', users: ['1', '2', '4', '5'], owner: '3', type: 'public'},
+    ]);
+
+    // Get the current logged-in user
+    const currentUser = computed<User | null>(() => {
+      return users.value.find(user => user.id === currentUserId.value) || null;
+    });
+
+    // Get the color based of the user status
+    const userStatusColor = computed((): string => {
+      const user = currentUser.value as User;
+      if (!user.status) return 'red !important';
+      switch (user.status) {
         case 'Online':
           return 'green';
         case 'Busy':
@@ -288,51 +257,91 @@ export default {
         default:
           return '';
       }
-    },
-    activeChannelReturn() {
-      let activeChannelName = this.channels.find(channel => channel.id === this.activeChannel)?.name || '';
-      let activeChannelUsers = this.channels.find(channel => channel.id === this.activeChannel)?.users || [];
-      console.log(activeChannelUsers);
+    });
 
-      return {activeChannelName, activeChannelUsers}
-    },
-  },
-  methods: {
-    onMenuClick(menuItem) {
-      if (this.activeDrawer === menuItem) {
-        this.leftDrawer = !this.leftDrawer;
+
+    // Get the active channel name and users from the active channel
+    const activeChannelReturn = computed(() => {
+      const activeChannelName = channels.value.find(channel => channel.id === activeChannel.value)?.name || '';
+      const activeChannelUsers = channels.value.find(channel => channel.id === activeChannel.value)?.users || [];
+      return {activeChannelName, activeChannelUsers};
+    });
+
+    const onMenuClick = (menuItem: string) => {
+      if (activeDrawer.value === menuItem) {
+        leftDrawer.value = !leftDrawer.value;
       } else {
-        this.leftDrawer = true;
-        this.activeDrawer = menuItem;
+        leftDrawer.value = true;
+        activeDrawer.value = menuItem;
       }
-    },
-    selectChannel(channelId) {
-      this.activeChannel = channelId;
-      console.log(this.activeChannel);
-    },
+    };
 
-    createChannel() {
-      const newChannelId = Date.now(); // Using timestamp as a unique ID
-      const newChannel = {id: newChannelId, name: `New Channel ${newChannelId}`};
-      this.channels.push(newChannel);
-    }
-  },
-}
+    const selectChannel = (channelId: number) => {
+      activeChannel.value = channelId;
+    };
 
+    const createChannel = () => {
+      const newChannelId = Date.now();
+      const newChannel: Channel = {
+        id: newChannelId,
+        name: `New Channel ${newChannelId}`,
+        users: [],
+        owner: '',
+        type: 'public'
+      };
+      channels.value.push(newChannel);
+    };
+
+    // Update the user status based on the selected status
+    const updateUserStatus = (newStatus: string) => {
+      const user = users.value.find(user => user.id === currentUserId.value);
+      if (user) {
+        user.status = newStatus;
+      }
+    };
+
+    return {
+      leftDrawer,
+      rightDrawer,
+      iconName,
+      showSettings,
+      activeDrawer,
+      currentUserId,
+      users,
+      channels,
+      activeChannel,
+      currentUser,
+      userStatusColor,
+      activeChannelReturn,
+      onMenuClick,
+      selectChannel,
+      createChannel,
+      updateUserStatus
+    };
+  }
+});
 </script>
 
 <style lang="scss">
+@import 'src/css/quasar.variables.scss';
+
 .blue-gradient {
-  background: #2980B9;
   background: $gradient-primary;
 }
 
-.blue-custom {
-  background: #4b6cb7;
+.drawer-gradient {
+  background: $gradient-secondary;
 }
+
 
 .no-shadow {
   box-shadow: none !important;
+}
+
+.user-status {
+  border-radius: 7px;
+  width: 14px;
+  height: 14px
 }
 
 .flex-layout {
@@ -360,12 +369,13 @@ export default {
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
-
-.half-opacity {
+.create-channel-btn {
+  position: absolute;
+  width: 80%;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
   opacity: 0.7;
 }
-
-
-
 
 </style>
