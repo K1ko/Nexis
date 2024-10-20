@@ -4,6 +4,7 @@
       <q-layout view="Lhh lpR fff" container class="bg-white text-dark">
         <q-toolbar>
           <q-toolbar-title>Account Settings</q-toolbar-title>
+          <q-btn flat round dense icon="close" @click="show = false" />
         </q-toolbar>
         <q-page-container>
           <q-page padding>
@@ -123,12 +124,12 @@ export default {
     return {
       show: false,
       firstname: 'John',
-      lastname: '',
-      email: '',
+      lastname: 'Doe',
+      email: 'email@example.com',
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
-      nickName: '',
+      nickName: 'johnydoe',
       showCurrentPassword: false,
       showNewPassword: false,
       showConfirmPassword: false,
