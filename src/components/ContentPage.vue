@@ -14,10 +14,6 @@
 
         <div style="width: 100%;">
           <q-chat-message
-            label="Sunday, 19th"
-          />
-
-          <q-chat-message
             v-for="(message, index) in messages"
             :key="index"
             :name="message.userName"
@@ -26,6 +22,7 @@
             :stamp="message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })"
             :sent="message.userName === 'John Doe'"
             :bg-color="message.userName === 'John Doe' ? 'info' : 'primary'"
+            :label="showLabel(index) ? formatDate(message.timestamp) : ''"
           >
           </q-chat-message>
           <q-chat-message
@@ -35,7 +32,7 @@
             @click="showPlaceholder = !showPlaceholder"
           >
             <template v-if="showPlaceholder">
-              <div class="placeholder">Kde mam protein?</div>
+              <div class="placeholder">btw where is my protein guys?</div>
             </template>
             <template v-else>
               <q-spinner-dots size="2rem" />
@@ -55,10 +52,12 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, watch, ref} from 'vue';
+import {defineComponent, watch, ref, nextTick } from 'vue';
 import PromptComponent from 'components/PromptComponent.vue';
-import { Notify } from 'quasar';
+import { Notify , scroll } from 'quasar';
 import {Message} from 'components/models';
+
+const { setVerticalScrollPosition } = scroll;
 
 export default defineComponent({
   components: {PromptComponent},
@@ -75,16 +74,15 @@ export default defineComponent({
     const showPlaceholder = ref(false);
 
     const messages = ref<Message[]>([
-      {id: 1, userName: 'GogomanTV', channelId: 1, text: 'Pozor zítra', timestamp: new Date('2022-07-17T16:00:00'), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
-      {id: 2, userName: 'Palo Ščerba', channelId: 1, text: 'Kedy bude ďalšia súťaž?', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg'},
-      {id: 3, userName: 'ResttPowered', channelId: 1, text: 'nehehehe', timestamp: new Date(), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
-      {id: 4, userName: 'John Doe', channelId: 1, text: 'jakoooo', timestamp: new Date(), avatar: 'https://cdn.quasar.dev/img/avatar.png'},
-      {id: 5, userName: 'Separ', channelId: 1, text: 'Kupil som si nove lambo', timestamp: new Date(), avatar: 'https://cdn.ticketlive.cz/upload/obrazek/nahled/o16tp-separ.jpg'},
-      {id: 6, userName: 'ResttPowered', channelId: 1, text: 'elektrika je lepšia', timestamp: new Date(), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
-      {id: 7, userName: 'GogomanTV', channelId: 1, text: 'Pozor zítra', timestamp: new Date(), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
-      {id: 8, userName: 'Palo Ščerba', channelId: 1, text: 'Kedy bude ďalšia súťaž?', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg'},
-      {id: 9, userName: 'ResttPowered', channelId: 1, text: 'Vy ostatní nezúfajte... o ďalší týždeň je ďalšia súťaž... o ďalší protein', timestamp: new Date(), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
-
+      {id: 1, userName: 'GogomanTV', channelId: 1, text: 'Yo, we need to plan a meeting to discuss the upcoming product launch.', timestamp: new Date('2024-07-17T11:11:00'), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
+      {id: 2, userName: 'Palo Ščerba', channelId: 1, text: 'What day works for everyone?', timestamp: new Date('2024-09-20T14:00:00'), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg'},
+      {id: 3, userName: 'ResttPowered', channelId: 1, text: 'I’m available on Wednesday or Friday this week.', timestamp: new Date('2024-09-28T12:00:00'), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
+      {id: 4, userName: 'John Doe', channelId: 1, text: 'Afternoons would be better for me.', timestamp: new Date('2024-10-01T14:40:00'), avatar: 'https://cdn.quasar.dev/img/avatar.png'},
+      {id: 5, userName: 'Separ', channelId: 1, text: 'I can do Wednesday at 3 PM, but Friday is tricky for me.', timestamp: new Date('2024-10-11T12:10:00'), avatar: 'https://cdn.ticketlive.cz/upload/obrazek/nahled/o16tp-separ.jpg'},
+      {id: 6, userName: 'ResttPowered', channelId: 1, text: 'Wednesday looks good for me :)', timestamp: new Date('2024-10-16T16:00:00'), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
+      {id: 7, userName: 'GogomanTV', channelId: 1, text: 'Alright, Wednesday at 3 PM it is! I’ll send out the calendar invite', timestamp: new Date('2024-10-17T17:10:00'), avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnlhmIMyTezz0ViDYMMvoOVNESnBQqCi2HcA&s'},
+      {id: 8, userName: 'Palo Ščerba', channelId: 1, text: 'We should also discuss the frontend deployment', timestamp: new Date('2024-10-19T11:00:00'), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg'},
+      {id: 9, userName: 'ResttPowered', channelId: 1, text: 'Great idea Palo', timestamp: new Date('2024-10-20T11:05:00'), avatar: 'https://fs5.mojevideo.sk/imgxl/141577.jpg'},
     ]);
 
     watch(() => props.activeChannel, (newChannel) => {
@@ -94,12 +92,12 @@ export default defineComponent({
       }
     });
 
-
+    // Just a simulation for now for loading more messages
     function loadMoreMessages(index: number, done: (stop?: boolean) => void) {
       setTimeout(() => {
         const moreMessages = [
-          {id: messages.value.length + 1, userName: 'John Doe', channelId: 1, text: 'I am fine, thank you', timestamp: new Date(), avatar: 'https://cdn.quasar.dev/img/avatar.png',},
-          {id: messages.value.length + 2, userName: 'Palo Ščerba', channelId: 1, text: 'Ďalšia súťaž bude o 2 týždne', timestamp: new Date(), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg',},
+          {id: messages.value.length + 1, userName: 'John Doe', channelId: 1, text: 'I am fine, thank you', timestamp: new Date('2021-07-17T16:00:00'), avatar: 'https://cdn.quasar.dev/img/avatar.png',},
+          {id: messages.value.length + 2, userName: 'Palo Ščerba', channelId: 1, text: 'We haven’t got a meeting since october', timestamp: new Date('2022-05-17T16:00:00'), avatar: 'https://i.ytimg.com/vi/DUZWiXmMoC0/maxresdefault.jpg',},
         ];
         if (moreMessages.length > 0) {
           messages.value.unshift(...moreMessages);
@@ -155,7 +153,23 @@ export default defineComponent({
           avatar: 'https://cdn.quasar.dev/img/avatar.png',
         });
         text.value = '';
+        nextTick(() => {
+          const container = document.querySelector('.html');
+          if (container) {
+            setVerticalScrollPosition(container, container.scrollHeight, 0);
+          }
+        });
       }}
+    function showLabel(index: number): boolean {
+      if (index === 0) return true;
+      const currentMessage = messages.value[index];
+      const previousMessage = messages.value[index - 1];
+      return currentMessage.timestamp.toDateString() !== previousMessage.timestamp.toDateString();
+    }
+
+    function formatDate(date: Date): string {
+      return date.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' });
+    }
 
     return {
       messages,
@@ -164,7 +178,8 @@ export default defineComponent({
       sendMessage,
       props,
       showPlaceholder,
-
+      showLabel,
+      formatDate,
     };
   },
 });

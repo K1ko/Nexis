@@ -40,6 +40,7 @@ const onSubmit = () => {
           <q-form @submit="onSubmit" class="q-gutter-md">
             <q-card-section class="text-center">
               <div class="text-accent  text-h6">Sign In</div>
+              <div class="text-grey-8">Sign in below to access your account</div>
             </q-card-section>
             <q-card-section class="q-pb-none q-pt-none">
               <q-input
@@ -51,7 +52,11 @@ const onSubmit = () => {
                 hint="Your email"
                 lazy-rules
                 :rules="[val => val && val.length > 0 || 'Email is required']"
-              />
+              >
+                <template v-slot:prepend>
+                  <q-icon name="email"/>
+                </template>
+              </q-input>
               <q-input
                 dense
                 outlined
@@ -61,7 +66,11 @@ const onSubmit = () => {
                 hint="Your password"
                 lazy-rules
                 :rules="[val => val && val.length > 0 || 'Password is required']"
-              />
+              >
+                <template v-slot:prepend>
+                  <q-icon name="lock"/>
+                </template>
+              </q-input>
             </q-card-section>
             <q-card-section class="q-pt-none">
               <q-btn

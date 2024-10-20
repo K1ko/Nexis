@@ -55,7 +55,11 @@ const onSubmit = () => {
                 hint="First name"
                 lazy-rules
                 :rules="[val => val && val.length > 0 || 'Name required']"
-              />
+              >
+                <template v-slot:prepend>
+                  <q-icon name="person"/>
+                </template>
+              </q-input>
               <q-input
                 dense
                 outlined
@@ -65,7 +69,11 @@ const onSubmit = () => {
                 hint="Last Name"
                 lazy-rules
                 :rules="[val => val && val.length > 0 || 'Surname required']"
-              />
+              >
+                <template v-slot:prepend>
+                  <q-icon name="person"/>
+                </template>
+              </q-input>
               <q-input
                 dense
                 outlined
@@ -75,7 +83,11 @@ const onSubmit = () => {
                 hint="Enter your username"
                 lazy-rules
                 :rules="[val => val && val.length > 0 || 'Username is required']"
-              />
+              >
+                <template v-slot:prepend>
+                  <q-icon name="alternate_email"/>
+                </template>
+              </q-input>
               <q-input
                 dense
                 outlined
@@ -85,7 +97,11 @@ const onSubmit = () => {
                 hint="Enter a valid email"
                 lazy-rules
                 :rules="[val => val && val.includes('@') && val.includes('.')|| 'Valid email is required']"
-              />
+              >
+                <template v-slot:prepend>
+                  <q-icon name="email"/>
+                </template>
+              </q-input>
               <q-input
                 dense
                 outlined
@@ -99,7 +115,11 @@ const onSubmit = () => {
                  val => val.length >= 8 || 'Password must be at least 8 characters',
                  val => /[0-9]/.test(val) || 'Password must contain at least one number',
                  val => /[a-z]/.test(val) || 'Password must contain at least one lower case letter',
-                 val => /[A-Z]/.test(val) || 'Password must contain at least one upper case letter']"/>
+                 val => /[A-Z]/.test(val) || 'Password must contain at least one upper case letter']">
+                <template v-slot:prepend>
+                  <q-icon name="lock"/>
+                </template>
+              </q-input>
             </q-card-section>
             <q-card-section class="q-pt-none q-pb-none">
               <q-toggle v-model="accept" label="I accept the license and terms"/>
