@@ -1,12 +1,26 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'user_channels'
+  protected tableName = 'channel_users'
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
-      table.integer('user_id').unsigned().references('id')
-      table.integer('channel_id').unsigned().references('id')
+      table.increments('id')
+      table
+        .integer("user_id")
+        .unsigned()
+        .notNullable()
+        .references("id")
+        .inTable("users")
+        .onDelete("CASCADE");
+      table
+        .integer("channel_id")
+        .unsigned()
+        .notNullable()
+        .references("id")
+        .inTable("channels")
+        .onDelete("CASCADE");
+      table.unique(["user_id", "channel_id"]);
       table.boolean('is_admin').notNullable().defaultTo(false)
       table.integer('kick_count').notNullable().defaultTo(0)
       table.boolean('is_banned').notNullable().defaultTo(false)
